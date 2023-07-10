@@ -50,7 +50,7 @@ class WordCount:
             for future in as_completed(futures):
                 result = future.result()
                 counts.append(result)
-            
+
             return counts
 
     def count_partition(self, file):
