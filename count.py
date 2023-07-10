@@ -16,9 +16,30 @@ class WordCount:
         self.file = file
         self.n = n  # lines per partition
         self.temp = root / "data" / "temp"
+        self.temp.mkdir(parents=True, exist_ok=True)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        [f.unlink() for f in self.temp.glob("*")]
 
     def execute(self):
         self.split()
+        counts = self.count_partitions()
+        return self.collect(counts)
+
+    def split(self):
+        def grouper(n, iterable, fillvalue=None):
+            args = [iter(iterable)] * n
+            return zip_longest(fillvalue=fillvalue, *args)
+
+        with open(self.file) as f:
+            for i, g in enumerate(grouper(self.n, f, fillvalue=""), 1):
+                with open(self.temp / f"partition_{i}.txt", "w") as fout:
+                    fout.writelines(g)
+
+    def count_partitions(self):
         with ProcessPoolExecutor(max_workers=cpu_count()) as executor:
             futures = [
                 executor.submit(self.count_partition, file)
@@ -29,19 +50,8 @@ class WordCount:
             for future in as_completed(futures):
                 result = future.result()
                 counts.append(result)
-        return self.collect(counts)
-
-    def split(self):
-        def grouper(n, iterable, fillvalue=None):
-            args = [iter(iterable)] * n
-            return zip_longest(fillvalue=fillvalue, *args)
-
-        with open(self.file) as f:
-            self.temp.mkdir(parents=True, exist_ok=True)
-            [f.unlink() for f in self.temp.glob("*") if f.is_file()]
-            for i, g in enumerate(grouper(self.n, f, fillvalue=""), 1):
-                with open(self.temp / f"partition_{i}.txt", "w") as fout:
-                    fout.writelines(g)
+            
+            return counts
 
     def count_partition(self, file):
         return Partition(file).count()
@@ -79,7 +89,9 @@ def save_count(count, file):
 
 if __name__ == "__main__":
     # ts = time.time()
-    count = WordCount("data/big.txt").execute()
+    input_file = "data/big.txt"
+    with WordCount(input_file) as counter:
+        count = counter.execute()
     # print(count)
     # print(time.time() - ts)
     save_count(count, "count.json")
