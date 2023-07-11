@@ -71,9 +71,15 @@ class WordCount:
         counter = Counter()
         with open(file) as f:
             for line in f:
-                line = re.sub(r"[^\w\s\-]", "", line)
-                counter += Counter(line.lower().split())
+                counter += self.count_line(line)
         return counter
+
+    def count_line(self, line):
+        line = re.sub(r"\-{2}", " ", line)
+        line = re.sub(r"(\d*)\-(\d+)", r"\1 \2", line)
+        line = re.sub(r"[^a-z\d\s\-]", "", line.lower())
+        line = [x.strip("-") for x in line.split()]
+        return Counter(line)
 
 
 @timeit
