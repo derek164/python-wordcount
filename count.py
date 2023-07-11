@@ -76,8 +76,8 @@ class WordCount:
     def count_line(self, line):
         line = re.sub(r"\-{2}", " ", line)
         line = re.sub(r"(\d+)\-(\d+)", r"\1 \2", line)
-        line = re.sub(r"[^a-z\d\s\-]", " ", line.lower())
-        line = [x.strip("-") for x in line.split()]
+        line = re.sub(r"[^a-z\d\s\-\'\"]", " ", line.lower())
+        line = [x.strip("-\'\"") for x in line.split()]
         return Counter(line)
 
 
