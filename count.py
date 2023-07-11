@@ -65,21 +65,10 @@ class WordCount:
             return dict(counter.most_common())
 
     def count_partition(self, file):
-        return Partition(file).count()
-
-
-class Partition:
-    def __init__(self, file):
-        self.file = file
-
-    def line_count(self, line):
-        return Counter(line.split())
-
-    def count(self):
         counter = Counter()
-        with open(self.file) as f:
+        with open(file) as f:
             for line in f:
-                counter += self.line_count(line)
+                counter += Counter(line.split())
         return counter
 
 
@@ -87,7 +76,7 @@ class Partition:
 def word_count(in_file, out_file):
     def save_count(count, out_file):
         with open(out_file, "w") as f:
-            json.dump(count, f, indent=4)
+            json.dump(count, f, indent=2)
 
     with WordCount(in_file) as wc:
         wc.split_file()
