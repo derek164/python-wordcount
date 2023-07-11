@@ -47,9 +47,8 @@ class WordCount:
 
         with open(self.file) as in_file:
             for i, group in enumerate(grouper(self.n, in_file), 1):
-                with open(
-                    self.temp / f"partition_{format(i, '06d')}.txt", "w"
-                ) as partition:
+                partition = f"partition_{format(i, '06d')}.txt"
+                with open(self.temp / partition, "w") as partition:
                     partition.writelines(group)
 
     @timeit
@@ -77,7 +76,7 @@ class WordCount:
     def count_line(self, line):
         line = re.sub(r"\-{2}", " ", line)
         line = re.sub(r"(\d+)\-(\d+)", r"\1 \2", line)
-        line = re.sub(r"[^a-z\d\s\-]", "", line.lower())
+        line = re.sub(r"[^a-z\d\s\-]", " ", line.lower())
         line = [x.strip("-") for x in line.split()]
         return Counter(line)
 
