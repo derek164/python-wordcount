@@ -68,18 +68,24 @@ class Partition:
         return Counter(line.split())
 
     def count(self):
+        # counter = Counter()
+        # with open(self.file) as f:
+        #     for line in f:
+        #         counter += self.line_count(line)
+        # return counter
+
+        counter = Counter()
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = []
             with open(self.file) as f:
                 for line in f:
                     futures.append(executor.submit(self.line_count, line))
 
-            line_counts = []
             for future in as_completed(futures):
                 result = future.result()
-                line_counts.append(result)
+                counter += result
 
-            return dict(reduce(add, map(Counter, line_counts)))
+            return counter
 
 
 def save_count(count, file):
@@ -88,10 +94,10 @@ def save_count(count, file):
 
 
 if __name__ == "__main__":
-    # ts = time.time()
+    ts = time.time()
     input_file = "data/big.txt"
     with WordCount(input_file) as counter:
         count = counter.execute()
     # print(count)
-    # print(time.time() - ts)
+    print(time.time() - ts)
     save_count(count, "count.json")
