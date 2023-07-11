@@ -1,3 +1,4 @@
+import re
 import json
 import time
 from collections import Counter
@@ -70,7 +71,8 @@ class WordCount:
         counter = Counter()
         with open(file) as f:
             for line in f:
-                counter += Counter(line.split())
+                line = re.sub(r'[^\w\s\-]', '', line)
+                counter += Counter(line.lower().split())
         return counter
 
 
