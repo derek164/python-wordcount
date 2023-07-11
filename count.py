@@ -40,7 +40,7 @@ class WordCount:
         [f.unlink() for f in self.temp.glob("*")]
 
     @timeit
-    def split_file(self):
+    def create_partitions(self):
         def grouper(n, iterable):
             iterable = iter(iterable)
             return iter(lambda: list(islice(iterable, n)), [])
@@ -88,14 +88,16 @@ def word_count(in_file, out_file):
         with open(out_file, "w") as f:
             json.dump(count, f, indent=2)
 
+    in_file = Path(in_file)
+    name, bytes = in_file.name, in_file.stat().st_size
+    print(f": {name} ({bytes:,}) :".center(57, "-"))
+
     with WordCount(in_file) as wc:
-        wc.split_file()
+        wc.create_partitions()
         count = wc.count_partitions()
         save_count(count, out_file)
 
 
 if __name__ == "__main__":
-    print(": SMALL (44) :".center(57, "-"))
     word_count(in_file="data/small.txt", out_file="data/small.json")
-    print(": BIG (~130K) :".center(57, "-"))
     word_count(in_file="data/big.txt", out_file="data/big.json")
