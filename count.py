@@ -1,5 +1,5 @@
-import re
 import json
+import re
 import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -71,7 +71,7 @@ class WordCount:
         counter = Counter()
         with open(file) as f:
             for line in f:
-                line = re.sub(r'[^\w\s\-]', '', line)
+                line = re.sub(r"[^\w\s\-]", "", line)
                 counter += Counter(line.lower().split())
         return counter
 
@@ -89,4 +89,7 @@ def word_count(in_file, out_file):
 
 
 if __name__ == "__main__":
-    word_count(in_file="data/big.txt", out_file="count.json")
+    print(": SMALL (44) :".center(57, "-"))
+    word_count(in_file="data/small.txt", out_file="data/small.json")
+    print(": BIG (~130K) :".center(57, "-"))
+    word_count(in_file="data/big.txt", out_file="data/big.json")
