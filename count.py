@@ -3,7 +3,7 @@ import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import wraps
-from itertools import zip_longest
+from itertools import zip_longest, islice
 from multiprocessing import cpu_count
 from operator import add
 from pathlib import Path
@@ -40,14 +40,16 @@ class WordCount:
 
     @timeit
     def split_file(self):
-        def grouper(n, iterable, fillvalue=None):
-            args = [iter(iterable)] * n
-            return zip_longest(fillvalue=fillvalue, *args)
+        def grouper(n, iterable):
+            iterable = iter(iterable)
+            return iter(lambda: list(islice(iterable, n)), [])
 
-        with open(self.file) as f:
-            for i, g in enumerate(grouper(self.n, f, fillvalue=""), 1):
-                with open(self.temp / f"partition_{i}.txt", "w") as fout:
-                    fout.writelines(g)
+        with open(self.file) as in_file:
+            for i, group in enumerate(grouper(self.n, in_file), 1):
+                with open(
+                    self.temp / f"partition_{format(i, '06d')}.txt", "w"
+                ) as partition:
+                    partition.writelines(group)
 
     @timeit
     def count_partitions(self):
