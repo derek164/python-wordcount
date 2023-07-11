@@ -3,7 +3,7 @@ import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import wraps
-from itertools import zip_longest, islice
+from itertools import islice
 from multiprocessing import cpu_count
 from operator import add
 from pathlib import Path
