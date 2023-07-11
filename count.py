@@ -100,3 +100,4 @@ def word_count(in_file, out_file):
 if __name__ == "__main__":
     word_count(in_file="data/small.txt", out_file="data/small.json")
     word_count(in_file="data/big.txt", out_file="data/big.json")
+    # word_count(in_file="data/enwik8.txt", out_file="data/enwik8.json")
