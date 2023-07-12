@@ -1,5 +1,6 @@
 import json
 import re
+import tempfile
 import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -8,8 +9,6 @@ from itertools import islice
 from multiprocessing import cpu_count
 from operator import add
 from pathlib import Path
-
-root = Path(__file__).parent
 
 
 def timeit(func):
@@ -30,14 +29,14 @@ class WordCount:
     def __init__(self, file, n=1000):
         self.file = file
         self.n = n  # lines per partition
-        self.temp = root / "data" / "temp"
-        self.temp.mkdir(parents=True, exist_ok=True)
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.temp_path = Path(self.temp_dir.name)
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        [f.unlink() for f in self.temp.glob("*")]
+        self.temp_dir.cleanup()
 
     @timeit
     def create_partitions(self):
@@ -48,7 +47,7 @@ class WordCount:
         with open(self.file) as in_file:
             for i, group in enumerate(grouper(self.n, in_file), 1):
                 partition = f"partition_{format(i, '06d')}.txt"
-                with open(self.temp / partition, "w") as partition:
+                with open(self.temp_path / partition, "w") as partition:
                     partition.writelines(group)
 
     @timeit
@@ -57,7 +56,7 @@ class WordCount:
         with ProcessPoolExecutor(max_workers=cpu_count()) as executor:
             futures = [
                 executor.submit(self.count_partition, file)
-                for file in self.temp.glob("*")
+                for file in self.temp_path.glob("*")
             ]
 
             for future in as_completed(futures):
@@ -77,7 +76,7 @@ class WordCount:
         line = re.sub(r"\-{2}", " ", line)
         line = re.sub(r"(\d+)\-(\d+)", r"\1 \2", line)
         line = re.sub(r"[^a-z\d\s\-\'\"]", " ", line.lower())
-        line = [x.strip("-\'\"") for x in line.split()]
+        line = [x.strip("-'\"") for x in line.split()]
         return Counter(line)
 
 
