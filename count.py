@@ -26,7 +26,7 @@ def timeit(func):
 
 
 class WordCount:
-    def __init__(self, file, n=1000):
+    def __init__(self, file, n=800):
         self.file = file
         self.n = n  # lines per partition
         self.temp_dir = tempfile.TemporaryDirectory()
