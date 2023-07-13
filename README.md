@@ -7,9 +7,8 @@ This Python script performs word counting on a large text file using parallel pr
 To run the script, follow these steps:
 
 1. Ensure you have Python installed (version 3.6 or higher).
-2. Clone the repository or download the script file ( count.py ).
-3. Written with native Python and standard libraries, so there are no additional dependencies.
-4. Place the text file you want to count words from in the data directory of the project.
+2. Clone the repository.
+4. Place the text file you want to count words from in the `data` directory of the project.
 5. Open a terminal and navigate to the project directory.
 6. Run the script by executing the following command: `python count.py`.
 
@@ -26,6 +25,4 @@ Replace `data/big.txt` with the path to your input file, and `data/big.json` wit
 
 ## Performance
 
-The script utilizes parallel processing with multiple processes to speed up the word counting process. It automatically determines the number of processes to use based on the number of available CPU cores.
-
-During execution, the script provides timing information for each major step, allowing you to assess the performance of different stages.
+The script utilizes parallel processing to speed up the word counting process. It automatically determines the number of processes to use based on the number of available CPU cores. During execution, the script provides timing information for each major step, allowing you to assess the performance of different stages.
