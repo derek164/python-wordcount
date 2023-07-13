@@ -7,14 +7,12 @@ This Python script performs word counting on a large text file using parallel pr
 To run the script, follow these steps:
 
 1. Ensure you have Python installed (version 3.6 or higher).
-2. Clone the repository.
-4. Place the text file you want to count words from in the `data` directory of the project.
-5. Open a terminal and navigate to the project directory.
-6. Run the script by executing the following command: `python count.py`.
+2. Open a terminal to clone and navigate to the project directory.
+3. Run the script by executing the following command: `python count.py`.
 
 ## Example Usage
 
-To count words in a large text file, modify the word_count function call in the __main__ block of the script:
+To count words in a large text file, modify the `word_count` function call in the `__main__` block of the script:
 
 ```{python}
 if __name__ == "__main__":
