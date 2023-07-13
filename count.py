@@ -12,6 +12,15 @@ from pathlib import Path
 
 
 def timeit(func):
+    """
+    Decorator that measures the execution time of a function.
+
+    Parameters
+    ----------
+    func
+        Input function.
+    """
+
     @wraps(func)
     def timeit_wrapper(*args, **kwargs):
         start_time = time.perf_counter()
@@ -26,6 +35,17 @@ def timeit(func):
 
 
 class WordCount:
+    """
+    Compute word frequency of `.txt` file.
+
+    Parameters
+    ----------
+    file
+        Input file path.
+    n
+        Number of lines per partition.
+    """
+
     def __init__(self, file, n=800):
         self.file = file
         self.n = n  # lines per partition
@@ -40,7 +60,22 @@ class WordCount:
 
     @timeit
     def create_partitions(self):
+        """
+        Splits the input file into partitions with at most `self.n` lines.
+        """
+
         def grouper(n, iterable):
+            """
+            Groups elements from an iterable into fixed-length chunks.
+
+            Parameters
+            ----------
+            n
+                Chunk size.
+            iterable
+                Input iterable.
+            """
+
             iterable = iter(iterable)
             return iter(lambda: list(islice(iterable, n)), [])
 
@@ -52,6 +87,10 @@ class WordCount:
 
     @timeit
     def count_partitions(self):
+        """
+        Counts the words in each partition using parallel processing and combines the results.
+        """
+
         counter = Counter()
         with ProcessPoolExecutor(max_workers=cpu_count()) as executor:
             futures = [
@@ -66,6 +105,13 @@ class WordCount:
             return dict(counter.most_common())
 
     def count_partition(self, file):
+        """
+        Counts the words a single partition given its file path.
+
+        file
+            Partition file path.
+        """
+
         counter = Counter()
         with open(file) as f:
             for line in f:
@@ -73,6 +119,10 @@ class WordCount:
         return counter
 
     def count_line(self, line):
+        """
+        Counts the words in a single line of text after regex text cleaning.
+        """
+
         line = re.sub(r"\-{2}", " ", line)
         line = re.sub(r"(\d+)\-(\d+)", r"\1 \2", line)
         line = re.sub(r"[^a-z\d\s\-\'\"]", " ", line.lower())
@@ -82,7 +132,25 @@ class WordCount:
 
 @timeit
 def word_count(in_file, out_file):
+    """
+    Driver method for orchestrating the word counting process
+
+    in_file
+        Input file to count.
+    out_file
+        Output file to save count.
+    """
+
     def save_count(count, out_file):
+        """
+        Save word count results to output file
+
+        count
+            Word count results.
+        out_file
+            Output file.
+        """
+
         with open(out_file, "w") as f:
             json.dump(count, f, indent=2)
 
